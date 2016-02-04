@@ -12,30 +12,22 @@ public class Pathfinding : MonoBehaviour {
         grid = GetComponent<Grid>();
     }
 
-	void FindPath(Vector3 startpos, Vector3 targetpos)
+	public List<Node> FindPath(Vector3 startpos, Vector3 targetpos)
     {
         Node startNode = grid.NodeFromWorldPoint(startpos);
         Node targetNode = grid.NodeFromWorldPoint(targetpos);
-        List<Node> openSet = new List<Node>();
+        Heap<Node> openSet = new Heap<Node>(grid.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
         while (openSet.Count > 0)
         {
-            Node currentNode = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
-            {
-                if (openSet[i].fCost < currentNode.fCost || openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost)
-                {
-                    currentNode = openSet[i];
-                }
-            }
-
-            openSet.Remove(currentNode);
+            Node currentNode = openSet.RemoveFirst();
+            
             closedSet.Add(currentNode);
 
             if (currentNode == targetNode)
             {
-                RetracePath(startNode, targetNode);
+                return RetracePath(startNode, targetNode);
             }
 
             foreach (Node neighbour in grid.GetNeighbours(currentNode))
@@ -55,12 +47,17 @@ public class Pathfinding : MonoBehaviour {
                     {
                         openSet.Add(neighbour);
                     }
+                    else
+                    {
+                        openSet.UpdateItem(neighbour);
+                    }
                 }
             }
         }
+        return new List<Node>();
     }
 
-    void RetracePath(Node start, Node end)
+    List<Node> RetracePath(Node start, Node end)
     {
         List<Node> Path = new List<Node>();
         Node currentNode = end;
@@ -72,6 +69,8 @@ public class Pathfinding : MonoBehaviour {
         }
 
         Path.Reverse();
+
+        return Path;
         
     }
 

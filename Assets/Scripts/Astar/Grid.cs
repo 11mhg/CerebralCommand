@@ -20,6 +20,14 @@ public class Grid : MonoBehaviour {
         createGrid();
     }
 
+    public int MaxSize
+    {
+        get
+        {
+            return gridSizeX * gridSizeY;
+        }
+    }
+
     void createGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
@@ -72,5 +80,10 @@ public class Grid : MonoBehaviour {
         int y =Mathf.RoundToInt((gridSizeY - 1) * percenty);
         return grid[x, y];
 
+    }
+
+    public Vector3 WorldPointFromNode(Node node)
+    {
+        return new Vector3(node.gridX * nodeDiameter + nodeRadius, node.gridY * nodeDiameter + nodeRadius, 0);
     }
 }
